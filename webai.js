@@ -1,5 +1,5 @@
 // simple ai
-let version = [0,1,8].join(".")
+let version = [0,1,9].join(".")
 console.log(`[WebAI] Simple AI (v${version}) initialized.`)
 
 /*

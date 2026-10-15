@@ -1,6 +1,6 @@
 {
   "name": "@austinsdk/webai",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A tiny dependency-free neural network library in plain JavaScript",
   "main": "webai.js",
   "files": [
