@@ -1,4 +1,6 @@
-// simple ai (v0.1.1)
+// simple ai
+let version = [0,1,1].join(".")
+console.log(`[WebAI] Simple AI (v${version}) initialized.`)
 
 /*
 Steps to ai:
