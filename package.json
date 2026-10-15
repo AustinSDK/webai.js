@@ -1,10 +1,17 @@
 {
   "name": "@austinsdk/webai",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A tiny dependency-free neural network library in plain JavaScript",
   "main": "webai.js",
-  "files": ["webai.js"],
-  "keywords": ["neural-network", "machine-learning", "ai", "backpropagation"],
+  "files": [
+    "webai.js"
+  ],
+  "keywords": [
+    "neural-network",
+    "machine-learning",
+    "ai",
+    "backpropagation"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AustinSDK/webai.js.git"
