@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-          # Do not configure a REGISTRY_TOKEN or secret here!
+          registry-url: 'https://npmjs.org' # Tells npm to prepare the environment for registry interaction
 
       - run: npm ci
       
