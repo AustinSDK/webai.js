@@ -14,7 +14,13 @@ Steps to ai:
 */
 
 class webai{
-    constructor(){
+    // options: {logging: fn(level, message, data) | false, logEvery: N epochs}
+    // `logging` can be reassigned any time: ai.logging = (level, msg, data) => {...}
+    constructor(options = {}){
+        this.logging = options.logging === undefined
+            ? (level, msg) => console.log(`[WebAI:${level}] ${msg}`)
+            : options.logging
+        this.logEvery = options.logEvery || 500
         this.scary = {
             trained: false,
             cache: {
@@ -28,6 +34,11 @@ class webai{
     }
 
     // ---------- helpers ----------
+    // level: "info" | "debug" | "warn"
+    _log(level, message, data){
+        if(typeof this.logging === "function") this.logging(level, message, data)
+    }
+
     _sigmoid(x){ return 1 / (1 + Math.exp(-x)) }
 
     // small seedable random generator so runs can be repeated (mulberry32)
@@ -66,6 +77,7 @@ class webai{
         }
         this.scary.trained = false
         this.scary.cache.lossHistory = []
+        this._log("info", `Schema set: ${sizes.join(" -> ")} (${this.scary.layers.length} layers, lr=${s.learningRate}, epochs=${s.epochs}${s.seed !== undefined ? ", seed=" + s.seed : ""})`, s)
     }
 
     // check a sample matches the schema. Returns true or throws a readable error.
@@ -85,6 +97,7 @@ class webai{
     passTrainingDataSample(sample){
         this.testSchema(sample)
         this.scary.cache.samples.push({input: sample.input.slice(), output: sample.output.slice()})
+        this._log("debug", `Added sample #${this.scary.cache.samples.length}: [${sample.input}] -> [${sample.output}]`, sample)
     }
     passTrainingData(data){
         for(const sample of data) this.passTrainingDataSample(sample)
@@ -113,6 +126,7 @@ class webai{
         if(samples.length === 0) throw new Error("[WebAI] no training data")
         const layers = this.scary.layers
         this.scary.cache.lossHistory = []
+        this._log("info", `Training started: ${samples.length} samples, ${epochs} epochs`)
 
         for(let epoch = 0; epoch < epochs; epoch++){
             // shuffle the order each epoch so it doesn't memorise the sequence
@@ -158,10 +172,13 @@ class webai{
                 }
             }
             this.scary.cache.lossHistory.push(epochLoss / samples.length)
+            if((epoch + 1) % this.logEvery === 0 || epoch === 0 || epoch === epochs - 1)
+                this._log("debug", `Epoch ${epoch + 1}/${epochs} - loss: ${(epochLoss / samples.length).toFixed(6)}`, {epoch: epoch + 1, loss: epochLoss / samples.length})
         }
 
         this.scary.trained = true
         const h = this.scary.cache.lossHistory
+        this._log("info", `Training finished. Final loss: ${h[h.length - 1].toFixed(6)}`)
         return {epochs, finalLoss: h[h.length - 1]}
     }
 
@@ -182,10 +199,11 @@ class webai{
     // ---------- 3. test ----------
     // give it inputs, get the outputs back
     testCacheOnProblem(input){
-        if(!this.scary.trained) console.warn("[WebAI] model has not been trained yet")
+        if(!this.scary.trained) this._log("warn", "model has not been trained yet")
         if(input.length !== this.scary.schema.input)
             throw new Error(`[WebAI] expected ${this.scary.schema.input} inputs, got ${input.length}`)
         const acts = this._forward(input)
+        this._log("debug", `Test: [${input}] -> [${acts[acts.length - 1].map(v => v.toFixed(4))}]`)
         return acts[acts.length - 1]
     }
 
@@ -198,6 +216,7 @@ class webai{
             return {input, expected: output, got, error, correct}
         })
         const accuracy = rows.filter(r => r.correct).length / rows.length
+        this._log("info", `Testing: ${rows.filter(r => r.correct).length}/${rows.length} correct (${(accuracy * 100).toFixed(1)}%)`, rows)
         return {rows, accuracy}
     }
 }
