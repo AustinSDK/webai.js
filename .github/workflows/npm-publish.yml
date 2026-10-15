@@ -20,4 +20,4 @@ jobs:
       - run: npm ci
       
       # Publish without any token variables
-      - run: npm publish --provenance
+      - run: npm publish --provenance --access public
