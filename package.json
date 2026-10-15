@@ -10,5 +10,8 @@
     "url": "git+https://github.com/AustinSDK/webai.js.git"
   },
   "author": "AustinSDK",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "node test.js"
+  }
 }
