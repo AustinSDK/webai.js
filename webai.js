@@ -221,5 +221,5 @@ class webai{
     }
 }
 
-// works as a plain <script> in the browser (global `webai`) and with require() in node
+// A simple module script that other web applications can easily call.
 export default webai
